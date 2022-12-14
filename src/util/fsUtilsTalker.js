@@ -11,6 +11,14 @@ async function readTalkerData() {
   }
 }
 
+async function findTalkerId(id) {
+  const data = await readTalkerData();
+  const findId = data.find((talker) => +talker.id === +id);
+
+  return findId;
+}
+
 module.exports = {
   readTalkerData,
+  findTalkerId,
 };
