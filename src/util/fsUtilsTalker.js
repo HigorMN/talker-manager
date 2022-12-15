@@ -30,8 +30,24 @@ async function writeTalkerData(newTalker) {
   }
 }
 
+async function putWriteTalkerData(id, name, age, talk) {
+  try {
+    const oldTalker = await readTalkerData();
+    const findId = oldTalker.find((talkes) => talkes.id === +id);
+    findId.name = name;
+    findId.age = age;
+    findId.talk = talk;
+    
+    const allTalker = JSON.stringify([...oldTalker], null, 2);
+    await fs.writeFile(path.resolve(__dirname, TALKER_DATA_PATH), allTalker);
+  } catch (error) {
+    return `Erro ao escrever o arquivo: ${error}`;
+  }
+}
+
 module.exports = {
   readTalkerData,
   findTalkerId,
   writeTalkerData,
+  putWriteTalkerData,
 };

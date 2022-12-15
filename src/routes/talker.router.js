@@ -1,5 +1,6 @@
 const express = require('express');
 const authToken = require('../middlewares/authToken');
+const nextId = require('../util/nextId');
 const {
   validateTalkerName,
   validateTalkerAge,
@@ -7,9 +8,17 @@ const {
   validateTalkerWatchedAt,
   validateTalkerRate,
 } = require('../middlewares/validateTalkers');
-const { readTalkerData, findTalkerId, writeTalkerData } = require('../util/fsUtilsTalker');
-const nextId = require('../util/nextId');
-const { HTTP_OK_STATUS, HTTP_NOT_FOUND_STATUS, HTTP_CREATED_STATUS } = require('./httpStatus');
+const {
+  readTalkerData,
+  findTalkerId,
+  writeTalkerData,
+  putWriteTalkerData,
+} = require('../util/fsUtilsTalker');
+const {
+  HTTP_OK_STATUS,
+  HTTP_NOT_FOUND_STATUS,
+  HTTP_CREATED_STATUS,
+} = require('./httpStatus');
 
 const router = express.Router();
 
@@ -21,7 +30,7 @@ router.post(
   validateTalkerTalk,
   validateTalkerWatchedAt,
   validateTalkerRate,
-  (req, res) => {
+  async (req, res) => {
     const { name, age, talk } = req.body;
     const newTalker = {
       name,
@@ -29,8 +38,8 @@ router.post(
       id: nextId(),
       talk,
     };
+    await writeTalkerData(newTalker);
     res.status(HTTP_CREATED_STATUS).json(newTalker);
-    writeTalkerData(newTalker);
   },
 );
 
@@ -50,5 +59,23 @@ router.get('/talker/:id', async (req, res) => {
 
   return res.status(HTTP_OK_STATUS).json(findId);
 });
+
+router.put(
+  '/talker/:id',
+  authToken,
+  validateTalkerName,
+  validateTalkerAge,
+  validateTalkerTalk,
+  validateTalkerWatchedAt,
+  validateTalkerRate,
+  async (req, res) => {
+    const { id } = req.params;
+    const { name, age, talk } = req.body;
+    await putWriteTalkerData(id, name, age, talk);
+    const findId = await findTalkerId(id);
+
+    res.status(HTTP_OK_STATUS).json(findId);
+  },
+);
 
 module.exports = router;
