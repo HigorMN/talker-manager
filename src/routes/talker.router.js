@@ -19,6 +19,7 @@ const {
   HTTP_OK_STATUS,
   HTTP_NOT_FOUND_STATUS,
   HTTP_CREATED_STATUS,
+  HTTP_NOT_CONTENT_STATUS,
 } = require('./httpStatus');
 
 const router = express.Router();
@@ -46,6 +47,14 @@ router.post(
 
 router.get('/talker', async (_req, res) => {
   res.status(HTTP_OK_STATUS).json(await readTalkerData());
+});
+
+router.get('/talker/search', authToken, async (req, res) => {
+  const { q } = req.query;
+  const data = await readTalkerData();
+  const filterData = data.filter((talks) => talks.name.toLowerCase().includes(q.toLowerCase()));
+
+  res.status(HTTP_OK_STATUS).json(filterData);
 });
 
 router.get('/talker/:id', async (req, res) => {
@@ -82,7 +91,7 @@ router.put(
 router.delete('/talker/:id', authToken, async (req, res) => {
   const { id } = req.params;
   await deleteTalkerData(id);
-  res.status(204).send();
+  res.status(HTTP_NOT_CONTENT_STATUS).send();
 });
 
 module.exports = router;
