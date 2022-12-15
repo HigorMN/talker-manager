@@ -1,8 +1,38 @@
 const express = require('express');
-const { readTalkerData, findTalkerId } = require('../util/fsUtilsTalker');
-const { HTTP_OK_STATUS, HTTP_NOT_FOUND_STATUS } = require('./httpStatus');
+const authToken = require('../middlewares/authToken');
+const {
+  validateTalkerName,
+  validateTalkerAge,
+  validateTalkerTalk,
+  validateTalkerWatchedAt,
+  validateTalkerRate,
+} = require('../middlewares/validateTalkers');
+const { readTalkerData, findTalkerId, writeTalkerData } = require('../util/fsUtilsTalker');
+const nextId = require('../util/nextId');
+const { HTTP_OK_STATUS, HTTP_NOT_FOUND_STATUS, HTTP_CREATED_STATUS } = require('./httpStatus');
 
 const router = express.Router();
+
+router.post(
+  '/talker',
+  authToken,
+  validateTalkerName,
+  validateTalkerAge,
+  validateTalkerTalk,
+  validateTalkerWatchedAt,
+  validateTalkerRate,
+  (req, res) => {
+    const { name, age, talk } = req.body;
+    const newTalker = {
+      name,
+      age,
+      id: nextId(),
+      talk,
+    };
+    res.status(HTTP_CREATED_STATUS).json(newTalker);
+    writeTalkerData(newTalker);
+  },
+);
 
 router.get('/talker', async (_req, res) => {
   res.status(HTTP_OK_STATUS).json(await readTalkerData());
