@@ -37,8 +37,20 @@ async function putWriteTalkerData(id, name, age, talk) {
     findId.name = name;
     findId.age = age;
     findId.talk = talk;
-    
-    const allTalker = JSON.stringify([...oldTalker], null, 2);
+
+    const allTalker = JSON.stringify(oldTalker, null, 2);
+    await fs.writeFile(path.resolve(__dirname, TALKER_DATA_PATH), allTalker);
+  } catch (error) {
+    return `Erro ao escrever o arquivo: ${error}`;
+  }
+}
+
+async function deleteTalkerData(id) {
+  try {
+    const oldTalker = await readTalkerData();
+    const filterTalker = oldTalker.find((talkes) => talkes.id !== +id);
+    const allTalker = JSON.stringify(filterTalker, null, 2);
+
     await fs.writeFile(path.resolve(__dirname, TALKER_DATA_PATH), allTalker);
   } catch (error) {
     return `Erro ao escrever o arquivo: ${error}`;
@@ -50,4 +62,5 @@ module.exports = {
   findTalkerId,
   writeTalkerData,
   putWriteTalkerData,
+  deleteTalkerData,
 };

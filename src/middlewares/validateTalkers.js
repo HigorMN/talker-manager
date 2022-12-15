@@ -2,7 +2,6 @@ const { HTTP_BAD_REQUEST_STATUS } = require('../routes/httpStatus');
 
 const validateTalkerName = (req, res, next) => {
   const { name } = req.body;
-  console.log('name:', name);
 
   if (!name) {
     return res.status(HTTP_BAD_REQUEST_STATUS).json({ message: 'O campo "name" é obrigatório' });

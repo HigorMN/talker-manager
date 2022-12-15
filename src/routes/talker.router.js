@@ -13,6 +13,7 @@ const {
   findTalkerId,
   writeTalkerData,
   putWriteTalkerData,
+  deleteTalkerData,
 } = require('../util/fsUtilsTalker');
 const {
   HTTP_OK_STATUS,
@@ -77,5 +78,11 @@ router.put(
     res.status(HTTP_OK_STATUS).json(findId);
   },
 );
+
+router.delete('/talker/:id', authToken, async (req, res) => {
+  const { id } = req.params;
+  await deleteTalkerData(id);
+  res.status(204).send();
+});
 
 module.exports = router;
