@@ -41,7 +41,7 @@ Unsupported config option for services.node: 'platform'
 **Login na aplicação**
 
 ```http
-  POST /talker
+  POST /login
 ```
 
 | Parâmetro   | Tipo       | Descrição                           |
